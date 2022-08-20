@@ -1,38 +1,109 @@
 .App {
-  text-align: center;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* fix font-weight: huge difference between 500 & 600, no change 100-500 */
+h1 {
+  font-size: 2rem;
+  font-weight: 500;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.coverImgDiv {
+  height: 150px;
+}
+
+.coverImg {
+  max-height: 100%;
+}
+
+.sidebar {
+  width: 25%;
+  right: 0;
+  position: fixed;
+  overflow-y: scroll;
+  top: 0;
+  bottom: 0;
+  padding-top: 15px;
+  padding-right: 2px;
+}
+
+.fixedNav {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  background-color: white;
+  z-index: 1;
 }
 
-.App-link {
-  color: #61dafb;
+button {
+  padding: 10px;
+  margin: 2px;
+  font-size: large;
+  border: none;
+  border-radius: 3px;
+  cursor: "pointer";
+}
+.loginButton {
+  background-color: springgreen;
+  /* btn btn-lg btn-block btn-success */
+}
+.signUpButton {
+  background-color: gold;
+  /* btn btn-lg btn-block btn-warning */
+}
+.mainContent {
+  display: flex;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.topMargin {
+  margin-top: 80px;
+}
+
+.booksUserHasRead {
+  color: gray;
+  font-style: italic;
+}
+
+.formCard {
+  margin-top: max(20vh, 140px);
+  width: 350px;
+}
+
+.formCardWide {
+  margin-top: max(20vh, 140px);
+  width: 700px;
+}
+
+.form-check {
+  visibility: hidden;
+}
+
+.disclaimer {
+  overflow: hidden;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.passwordRequirements {
+  color: red;
+  font-size: small;
+}
+
+.blueText {
+  color: dodgerblue;
 }
