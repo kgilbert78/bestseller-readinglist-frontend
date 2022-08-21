@@ -1,0 +1,90 @@
+[
+  {
+    "amazonLink": "https://www.amazon.com/dp/073521123X?tag=NYTBSREV-20",
+    "author": "Paula Hawkins",
+    "bookID": 4,
+    "createdAt": "2021-09-13T15:00:10.706Z",
+    "didRead": false,
+    "title": "A SLOW FIRE BURNING",
+    "updatedAt": "2021-09-18T00:25:43.546Z",
+    "category": "combined-print-and-e-book-fiction",
+    "categoryDisplay": "Combined Print and E-Book Fiction"
+  },
+  {
+    "amazonLink": "https://www.amazon.com/dp/1250145260?tag=NYTBSREV-20",
+    "author": "Louise Penny",
+    "bookID": 2,
+    "createdAt": "2021-09-06T20:50:26.856Z",
+    "didRead": false,
+    "title": "THE MADNESS OF CROWDS",
+    "updatedAt": "2021-09-18T00:28:04.158Z",
+    "category": "combined-print-and-e-book-fiction",
+    "categoryDisplay": "Combined Print and E-Book Fiction"
+  },
+  {
+    "amazonLink": "https://www.amazon.com/dp/0385547218?tag=NYTBSREV-20",
+    "author": "Qian Julie Wang",
+    "bookID": 7,
+    "createdAt": "2021-09-17T20:30:10.136Z",
+    "didRead": true,
+    "title": "BEAUTIFUL COUNTRY",
+    "updatedAt": "2021-09-18T00:28:15.093Z",
+    "category": "combined-print-and-e-book-fiction",
+    "categoryDisplay": "Combined Print and E-Book Fiction"
+  },
+  {
+    "amazonLink": "https://www.amazon.com/dp/1982159006?tag=NYTBSREV-20",
+    "author": "Craig Whitlock",
+    "bookID": 5,
+    "createdAt": "2021-09-13T15:00:24.512Z",
+    "didRead": true,
+    "title": "THE AFGHANISTAN PAPERS",
+    "updatedAt": "2021-09-18T00:29:12.630Z",
+    "category": "combined-print-and-e-book-fiction",
+    "categoryDisplay": "Combined Print and E-Book Fiction"
+  },
+  {
+    "amazonLink": "https://www.amazon.com/dp/1982173610?tag=NYTBSREV-20",
+    "author": "Stephen King",
+    "bookID": 3,
+    "createdAt": "2021-09-13T15:00:00.874Z",
+    "didRead": false,
+    "title": "BILLY SUMMERS",
+    "updatedAt": "2021-09-18T01:31:35.375Z",
+    "category": "combined-print-and-e-book-fiction",
+    "categoryDisplay": "Combined Print and E-Book Fiction"
+  },
+  {
+    "amazonLink": "https://www.amazon.com/dp/0374602603?tag=NYTBSREV-20",
+    "author": "Sally Rooney",
+    "bookID": 8,
+    "createdAt": "2021-09-18T19:28:14.749Z",
+    "didRead": false,
+    "title": "BEAUTIFUL WORLD, WHERE ARE YOU",
+    "updatedAt": "2021-09-18T19:28:14.749Z",
+    "category": "combined-print-and-e-book-fiction",
+    "categoryDisplay": "Combined Print and E-Book Fiction"
+  },
+  {
+    "amazonLink": "http://www.amazon.com/Ends-Us-Novel-Colleen-Hoover-ebook/dp/B0176M3U10?tag=NYTBSREV-20",
+    "author": "Colleen Hoover",
+    "bookID": 9,
+    "createdAt": "2021-09-19T14:17:05.477Z",
+    "didRead": true,
+    "title": "IT ENDS WITH US",
+    "updatedAt": "2021-09-19T14:17:11.948Z",
+    "category": "combined-print-and-e-book-fiction",
+    "categoryDisplay": "Combined Print and E-Book Fiction"
+  },
+  {
+    "amazonLink": "https://www.amazon.com/Braiding-Sweetgrass-Indigenous-Scientific-Knowledge/dp/1571313567?tag=NYTBSREV-20",
+    "author": "Robin Wall Kimmerer",
+    "bookID": 10,
+    "createdAt": "2022-08-20T20:47:44.297Z",
+    "didRead": false,
+    "title": "BRAIDING SWEETGRASS",
+    "updatedAt": "2022-08-20T20:47:44.297Z",
+    "category": "combined-print-and-e-book-nonfiction",
+    "categoryDisplay": "Combined Print & E-Book Nonfiction"
+  }
+]
