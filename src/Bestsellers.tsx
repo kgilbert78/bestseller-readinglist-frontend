@@ -1,26 +1,52 @@
 // import { useEffect } from "react";
-import { Bestseller } from "./App";
+import { NYTCategory, NYTBook, NYTBuyLink, Bestseller } from "./App";
+import "./App.css";
 
 interface BestsellerProps {
   bestsellerList: Bestseller[] | null;
+  NYTList: NYTCategory[] | null;
 }
 
-export const Bestsellers = ({ bestsellerList }: BestsellerProps) => {
-  // useEffect(() => {
-  //   console.log("props: ", bestsellerList);
-  // }, [bestsellerList]);
-
-  if (bestsellerList) {
-    console.log(bestsellerList[0].title);
+export const Bestsellers = ({ NYTList, bestsellerList }: BestsellerProps) => {
+  if (NYTList) {
+    console.log("bestsellerList in Bestsellers.tsx:", NYTList);
     return (
       <div className="d-flex flex-row" id="top">
         <div id="bestsellerLists" className="topMargin">
-          <p>Main Content</p>
-          <p>{bestsellerList[0].title}</p>
+          {NYTList.map((category) => {
+            return (
+              <div>
+                <h2>{category.display_name}</h2>
+                <div>
+                  {category.books.map((book) => {
+                    return (
+                      <div>
+                        <div>
+                          <div className="coverImgDiv">
+                            <a
+                              href={`${book.buy_links[0].url}`}
+                              target="_blank"
+                            >
+                              <img className="coverImg" src={book.book_image} />
+                            </a>
+                          </div>
+                          <div>
+                            {book.rank}. {book.title}, by {book.author}
+                            <br />
+                            {book.description}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     );
   } else {
-    return null;
+    return <h1 style={{ marginTop: 100 }}>Loading...</h1>;
   }
 };

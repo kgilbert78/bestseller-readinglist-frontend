@@ -18,6 +18,51 @@ export interface Bestseller {
   categoryDisplay: string;
 }
 
+// All NYT Stuff
+export interface NYTBuyLink {
+  name: string;
+  url: string;
+}
+export interface NYTBook {
+  age_group: string;
+  amazon_product_url: string;
+  article_chapter_link: string;
+  author: string;
+  book_image: string;
+  book_image_height: number;
+  book_image_width: number;
+  book_review_link: string;
+  book_uri: string;
+  buy_links: NYTBuyLink[]; //<Array<NYTBuyLink>>;
+  contributor: string;
+  contributor_note: string;
+  created_date: string;
+  description: string;
+  first_chapter_link: string;
+  price: string;
+  primary_isbn10: string;
+  primary_isbn13: string;
+  publisher: string;
+  rank: number;
+  rank_last_week: number;
+  sunday_review_link: "";
+  title: string;
+  updated_date: string;
+  weeks_on_list: number;
+}
+
+export interface NYTCategory {
+  books: NYTBook[];
+  display_name: string;
+  list_id: number;
+  list_image: null;
+  list_image_height: null;
+  list_image_width: null;
+  list_name: string;
+  list_name_encoded: string;
+  updated: string;
+}
+
 // for/from user's reading list in my database
 interface ReadingListBook {
   title: string;
@@ -37,10 +82,12 @@ interface User {
 }
 
 function App() {
+  const [NYTList, setNYTList] = useState<Array<NYTCategory> | null>(null);
   const [bestsellerList, setBestsellerList] =
     useState<Array<Bestseller> | null>(null);
 
   const loadBestsellers = useCallback(async () => {
+    console.log("loadBestsellers ran");
     const response = await fetch(
       "https://api.nytimes.com/svc/books/v3/lists/overview.json?api-key=jhQErSJStIHawxkBeOcyPHcP0nC3O5Dw",
       {
@@ -51,14 +98,15 @@ function App() {
     const newYorkTimesData = await response.json();
     // console.log(newYorkTimesData);
     // console.log(newYorkTimesData.results.lists);
-    if (!bestsellerList) {
-      // setBestsellerList(newYorkTimesData.results.lists);
-      for (let eachPart of newYorkTimesData) {
-        // make an object that matches the format of the Bestseller interface and append to a list variable, to pass to setBestsellerList after loop finishes
-      }
+    if (!NYTList) {
+      console.log(newYorkTimesData.results.lists);
+      setNYTList(newYorkTimesData.results.lists);
+      // for (let eachPart of newYorkTimesData) {
+      //   // make an object that matches the format of the Bestseller interface and append to a list variable, to pass to setBestsellerList after loop finishes
+      // }
     }
-    console.log("bestsellerList in App:", bestsellerList);
-  }, [bestsellerList]); // bestsellerList
+    console.log("bestsellerList in App:", NYTList);
+  }, [NYTList]); // bestsellerList
 
   const getReadingListFromDB = async () => {
     let dbData = sampleReadingList;
@@ -89,7 +137,7 @@ function App() {
       <TopNav />
       <div className="mainContent">
         <SideNav />
-        <Bestsellers bestsellerList={bestsellerList} />
+        <Bestsellers NYTList={NYTList} bestsellerList={bestsellerList} />
       </div>
     </div>
   );
