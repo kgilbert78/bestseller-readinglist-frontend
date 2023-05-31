@@ -64,7 +64,10 @@ export interface NYTCategory {
 }
 
 // better way to tell it what specific strings? not sure if this is doing that.
-export type NYTCategoryNames = Array<NYTCategory["display_name"]>;
+export type NYTCategoryNames = Array<{
+  key: NYTCategory["list_id"];
+  name: NYTCategory["display_name"];
+}>;
 
 // for/from user's reading list in my database
 interface ReadingListBook {
@@ -113,13 +116,12 @@ function App() {
       // }
     }
     let catNameMap = nytList?.map((category: NYTCategory) => {
+      const listID = category.list_id;
       const categoryName = category.display_name;
-      return categoryName;
+      return { key: listID, name: categoryName };
     });
     if (catNameMap) {
       setNYTCategoryNames(catNameMap);
-      console.log("catNameMap", catNameMap);
-      console.log("nytCategoryNames", nytCategoryNames);
     } else {
       console.log("no catNameMap");
     }
@@ -154,7 +156,7 @@ function App() {
     <div className="App">
       <TopNav />
       <div className="mainContent">
-        <SideNav />
+        <SideNav nytCategoryNames={nytCategoryNames} />
         <Bestsellers nytList={nytList} bestsellerList={bestsellerList} />
       </div>
     </div>

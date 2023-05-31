@@ -1,14 +1,19 @@
 import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
+import { NYTCategoryNames } from "./App";
 import "./App.css";
 
-// type NYTCategoryNames = Array<NYTCategory["display_name"]>;
+interface Props {
+  nytCategoryNames: NYTCategoryNames | null;
+}
 
-export const SideNav = () => {
+export const SideNav = ({ nytCategoryNames }: Props) => {
   return (
-    <div className="sidebar">
-      <Menu menuButton={<MenuButton>Jump to a category</MenuButton>}>
-        <MenuItem>Selection</MenuItem>
+    <div className="sidebar" style={{ marginTop: 120 }}>
+      <Menu menuButton={<MenuButton>Jump to a category:</MenuButton>}>
+        {nytCategoryNames?.map((category) => {
+          return <MenuItem key={category.key}>{category.name}</MenuItem>;
+        })}
       </Menu>
 
       <div id="readingList" className="mt-5">
