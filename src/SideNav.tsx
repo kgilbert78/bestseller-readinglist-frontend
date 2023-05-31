@@ -1,19 +1,16 @@
+import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
+import "@szhsin/react-menu/dist/index.css";
+import "./App.css";
+
+// type NYTCategoryNames = Array<NYTCategory["display_name"]>;
+
 export const SideNav = () => {
   return (
     <div className="sidebar">
-      <div>
-        <h3
-          className="topMargin"
-          data-bs-toggle="collapse"
-          role="button"
-          aria-expanded="false"
-          aria-controls="collapseExample"
-        >
-          Jump to a category &#x25BC;
-        </h3>
-        <>^ fix dropdown arrow size & figure out collapse without bootstrap</>
-        <div id="navLinks" className="collapse"></div>
-      </div>
+      <Menu menuButton={<MenuButton>Jump to a category</MenuButton>}>
+        <MenuItem>Selection</MenuItem>
+      </Menu>
+
       <div id="readingList" className="mt-5">
         <h3>My Reading List</h3>
         <ul id="booksToRead">

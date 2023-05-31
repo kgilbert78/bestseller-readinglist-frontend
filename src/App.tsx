@@ -63,6 +63,9 @@ export interface NYTCategory {
   updated: string;
 }
 
+// better way to tell it what specific strings? not sure if this is doing that.
+export type NYTCategoryNames = Array<NYTCategory["display_name"]>;
+
 // for/from user's reading list in my database
 interface ReadingListBook {
   title: string;
@@ -82,31 +85,46 @@ interface User {
 }
 
 function App() {
-  const [NYTList, setNYTList] = useState<Array<NYTCategory> | null>(null);
+  const [nytList, setNYTList] = useState<Array<NYTCategory> | null>(null);
+  const [nytCategoryNames, setNYTCategoryNames] =
+    useState<NYTCategoryNames | null>(null);
   const [bestsellerList, setBestsellerList] =
     useState<Array<Bestseller> | null>(null);
 
   const loadBestsellers = useCallback(async () => {
-    console.log("loadBestsellers ran");
-    const response = await fetch(
-      "https://api.nytimes.com/svc/books/v3/lists/overview.json?api-key=jhQErSJStIHawxkBeOcyPHcP0nC3O5Dw",
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    const newYorkTimesData = await response.json();
+    console.log("loadBestsellers ran", nytList);
+    // use localstorage for this, with timestamp to compare if fetch needed
     // console.log(newYorkTimesData);
     // console.log(newYorkTimesData.results.lists);
-    if (!NYTList) {
-      console.log(newYorkTimesData.results.lists);
+    if (!nytList) {
+      console.log("fetching NYT data...");
+      const response = await fetch(
+        "https://api.nytimes.com/svc/books/v3/lists/overview.json?api-key=jhQErSJStIHawxkBeOcyPHcP0nC3O5Dw",
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const newYorkTimesData = await response.json();
       setNYTList(newYorkTimesData.results.lists);
+
       // for (let eachPart of newYorkTimesData) {
       //   // make an object that matches the format of the Bestseller interface and append to a list variable, to pass to setBestsellerList after loop finishes
       // }
     }
-    console.log("bestsellerList in App:", NYTList);
-  }, [NYTList]); // bestsellerList
+    let catNameMap = nytList?.map((category: NYTCategory) => {
+      const categoryName = category.display_name;
+      return categoryName;
+    });
+    if (catNameMap) {
+      setNYTCategoryNames(catNameMap);
+      console.log("catNameMap", catNameMap);
+      console.log("nytCategoryNames", nytCategoryNames);
+    } else {
+      console.log("no catNameMap");
+    }
+    // console.log("bestsellerList in App:", nytList);
+  }, [nytList]); // bestsellerList
 
   const getReadingListFromDB = async () => {
     let dbData = sampleReadingList;
@@ -124,7 +142,7 @@ function App() {
     //   }
     // );
     // const dbData = await response.json();
-    console.log(dbData);
+    console.log("dbData", dbData);
   };
 
   useEffect(() => {
@@ -137,7 +155,7 @@ function App() {
       <TopNav />
       <div className="mainContent">
         <SideNav />
-        <Bestsellers NYTList={NYTList} bestsellerList={bestsellerList} />
+        <Bestsellers nytList={nytList} bestsellerList={bestsellerList} />
       </div>
     </div>
   );

@@ -66,12 +66,14 @@ button {
   /* btn btn-lg btn-block btn-warning */
 }
 .mainContent {
+  margin-top: 120px;
   display: flex;
+  flex-direction: row-reverse;
 }
 
-.topMargin {
+/* .topMargin {
   margin-top: 80px;
-}
+} */
 
 .booksUserHasRead {
   color: gray;
