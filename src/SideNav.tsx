@@ -10,7 +10,11 @@ interface Props {
 export const SideNav = ({ nytCategoryNames }: Props) => {
   return (
     <div className="sidebar" style={{ marginTop: 120 }}>
-      <Menu menuButton={<MenuButton>Jump to a category:</MenuButton>}>
+      <Menu
+        menuButton={<MenuButton>Jump to a category:</MenuButton>}
+        overflow="auto"
+        position="anchor"
+      >
         {nytCategoryNames?.map((category) => {
           return <MenuItem key={category.key}>{category.name}</MenuItem>;
         })}

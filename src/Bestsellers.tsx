@@ -34,7 +34,15 @@ export const Bestsellers = ({ nytList, bestsellerList }: BestsellerProps) => {
                               href={`${book.buy_links[0].url}`}
                               target="_blank"
                             >
-                              <img className="coverImg" src={book.book_image} />
+                              <img
+                                className="coverImg"
+                                src={
+                                  book.book_image
+                                    ? book.book_image
+                                    : "https://islandpress.org/sites/default/files/default_book_cover_2015.jpg"
+                                }
+                                // make my own replacement image for unavailable covers!
+                              />
                             </a>
                           </div>
                           <div>
