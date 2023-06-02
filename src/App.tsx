@@ -14,8 +14,12 @@ export interface Bestseller {
   amazonLink: string;
   rank: number; // rank *within* category
   // make a "Category" interface to reflect incoming data structure or is this enough?
-  category: string;
-  categoryDisplay: string;
+  category: BestsellerCategory;
+}
+
+export interface BestsellerCategory {
+  categoryID: number;
+  categoryName: string;
 }
 
 // All NYT Stuff
@@ -78,7 +82,7 @@ interface ReadingListBook {
   createdAt: string; // timestamp? comes in as string though.
   updatedAt: string; // timestamp? comes in as string though.
   didRead: boolean;
-  category: string;
+  category: number;
   categoryDisplay: string;
 }
 
@@ -114,12 +118,55 @@ function App() {
       // for (let eachPart of newYorkTimesData) {
       //   // make an object that matches the format of the Bestseller interface and append to a list variable, to pass to setBestsellerList after loop finishes
       // }
+    } else {
+      const filteredCategories = nytList.map((categories, categoryIndex) => {
+        return {
+          categoryID: categories.list_id,
+          categoryName: categories.display_name,
+        };
+      });
+      localStorage.setItem("categoryData", JSON.stringify(filteredCategories));
+      // console.log(
+      //   "categories in storage",
+      //   localStorage.getItem("categoryData")
+      // );
+
+      const filteredBooks = nytList.map((categories) => {
+        let categoryID = categories.list_id;
+        let categoryName = categories.display_name;
+
+        let booksInCategory = categories.books.map((book) => {
+          return {
+            title: book.title,
+            author: book.author,
+            description: book.description,
+            coverImg: book.book_image,
+            amazonLink: book.buy_links[0].url,
+            rank: book.rank,
+            category: {
+              categoryID: categoryID,
+              categoryName: categoryName,
+            },
+          };
+        });
+
+        // return one list of all books
+        return booksInCategory.map((book) => book);
+
+        // this returns a list of books for each category
+        // return booksInCategory;
+      });
+
+      localStorage.setItem("bookData", JSON.stringify(filteredBooks));
     }
+    // console.log("from localstorage", localStorage.getItem("bookData"));
+
     let catNameMap = nytList?.map((category: NYTCategory) => {
       const listID = category.list_id;
       const categoryName = category.display_name;
       return { key: listID, name: categoryName };
     });
+
     if (catNameMap) {
       setNYTCategoryNames(catNameMap);
     } else {
