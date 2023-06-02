@@ -157,9 +157,10 @@ function App() {
         // return booksInCategory;
       });
 
-      localStorage.setItem("bookData", JSON.stringify(filteredBooks));
+      let innerBookList = filteredBooks[0];
+      localStorage.setItem("bookData", JSON.stringify(innerBookList));
     }
-    // console.log("from localstorage", localStorage.getItem("bookData"));
+    console.log("from localstorage", localStorage.getItem("bookData"));
 
     let catNameMap = nytList?.map((category: NYTCategory) => {
       const listID = category.list_id;
