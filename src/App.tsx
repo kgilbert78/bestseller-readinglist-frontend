@@ -99,11 +99,11 @@ function App() {
     useState<Array<Bestseller> | null>(null);
 
   const loadBestsellers = useCallback(async () => {
-    console.log("loadBestsellers ran", nytList);
+    console.log("loadBestsellers ran", bestsellerList);
     // use localstorage for this, with timestamp to compare if fetch needed
     // console.log(newYorkTimesData);
     // console.log(newYorkTimesData.results.lists);
-    if (!nytList) {
+    if (!bestsellerList) {
       console.log("fetching NYT data...");
       const response = await fetch(
         "https://api.nytimes.com/svc/books/v3/lists/overview.json?api-key=jhQErSJStIHawxkBeOcyPHcP0nC3O5Dw",
@@ -113,68 +113,80 @@ function App() {
         }
       );
       const newYorkTimesData = await response.json();
-      setNYTList(newYorkTimesData.results.lists);
+      // setNYTList(newYorkTimesData.results.lists);
 
-      // for (let eachPart of newYorkTimesData) {
-      //   // make an object that matches the format of the Bestseller interface and append to a list variable, to pass to setBestsellerList after loop finishes
-      // }
-    } else {
-      const filteredCategories = nytList.map((categories, categoryIndex) => {
-        return {
-          categoryID: categories.list_id,
-          categoryName: categories.display_name,
-        };
-      });
+      const filteredCategories = newYorkTimesData.results.lists.map(
+        (categories: NYTCategory) => {
+          return {
+            categoryID: categories.list_id,
+            categoryName: categories.display_name,
+          };
+        }
+      );
       localStorage.setItem("categoryData", JSON.stringify(filteredCategories));
       // console.log(
       //   "categories in storage",
       //   localStorage.getItem("categoryData")
       // );
 
-      const filteredBooks = nytList.map((categories) => {
-        let categoryID = categories.list_id;
-        let categoryName = categories.display_name;
+      const filteredBooks = newYorkTimesData.results.lists.map(
+        (categories: NYTCategory) => {
+          let categoryID = categories.list_id;
+          let categoryName = categories.display_name;
 
-        let booksInCategory = categories.books.map((book) => {
-          return {
-            title: book.title,
-            author: book.author,
-            description: book.description,
-            coverImg: book.book_image,
-            amazonLink: book.buy_links[0].url,
-            rank: book.rank,
-            category: {
-              categoryID: categoryID,
-              categoryName: categoryName,
-            },
-          };
-        });
+          let booksInCategory = categories.books.map((book) => {
+            return {
+              title: book.title,
+              author: book.author,
+              description: book.description,
+              coverImg: book.book_image,
+              amazonLink: book.buy_links[0].url,
+              rank: book.rank,
+              category: {
+                categoryID: categoryID,
+                categoryName: categoryName,
+              },
+            };
+          });
 
-        // return one list of all books
-        return booksInCategory.map((book) => book);
+          // return one list of all books
+          return booksInCategory.map((book) => book);
 
-        // this returns a list of books for each category
-        // return booksInCategory;
+          // this returns a list of books for each category
+          // return booksInCategory;
+        }
+      );
+
+      // figure out how to handle this in filteredBooks()
+      let combinedInnerLists = filteredBooks.map((list: Bestseller[]) => {
+        return list;
       });
 
-      let innerBookList = filteredBooks[0];
-      localStorage.setItem("bookData", JSON.stringify(innerBookList));
+      localStorage.setItem("bookData", JSON.stringify(combinedInnerLists));
+      setBestsellerList(combinedInnerLists);
+
+      console.log("NYTData retrieved and saved to localStorage");
     }
-    console.log("from localstorage", localStorage.getItem("bookData"));
+    // console.log("from localstorage", localStorage.getItem("bookData"));
 
-    let catNameMap = nytList?.map((category: NYTCategory) => {
-      const listID = category.list_id;
-      const categoryName = category.display_name;
-      return { key: listID, name: categoryName };
-    });
+    let categoriesFromStorage = localStorage.getItem("categoryData");
+    console.log("categoriesFromStorage", categoriesFromStorage);
 
-    if (catNameMap) {
-      setNYTCategoryNames(catNameMap);
-    } else {
-      console.log("no catNameMap");
+    if (categoriesFromStorage) {
+      let categoryDataObj = JSON.parse(categoriesFromStorage);
+      // console.log("categoryDataObj:", categoryDataObj);
+      setNYTCategoryNames(categoryDataObj);
+      // console.log("nytCategoryNames", nytCategoryNames);
+    }
+
+    let bookDataFromStorage = localStorage.getItem("bookData");
+    if (bookDataFromStorage) {
+      let bookDataObj = JSON.parse(bookDataFromStorage);
+      setBestsellerList(bookDataObj);
+      console.log("bookDataObj from storage:", bookDataObj);
     }
     // console.log("bestsellerList in App:", nytList);
-  }, [nytList]); // bestsellerList
+  }, []); // bestsellerList
 
   const getReadingListFromDB = async () => {
     let dbData = sampleReadingList;
@@ -192,7 +204,7 @@ function App() {
     //   }
     // );
     // const dbData = await response.json();
-    console.log("dbData", dbData);
+    // console.log("dbData", dbData);
   };
 
   useEffect(() => {
