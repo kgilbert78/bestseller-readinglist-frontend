@@ -68,10 +68,10 @@ export interface NYTCategory {
 }
 
 // better way to tell it what specific strings? not sure if this is doing that.
-export type NYTCategoryNames = Array<{
-  key: NYTCategory["list_id"];
-  name: NYTCategory["display_name"];
-}>;
+// export type NYTCategoryNames = Array<{
+//   key: NYTCategory["list_id"];
+//   name: NYTCategory["display_name"];
+// }>;
 
 // for/from user's reading list in my database
 interface ReadingListBook {
@@ -94,7 +94,7 @@ interface User {
 function App() {
   const [nytList, setNYTList] = useState<Array<NYTCategory> | null>(null);
   const [nytCategoryNames, setNYTCategoryNames] =
-    useState<NYTCategoryNames | null>(null);
+    useState<Array<BestsellerCategory> | null>(null);
   const [bestsellerList, setBestsellerList] =
     useState<Array<Bestseller> | null>(null);
 
@@ -103,7 +103,7 @@ function App() {
     // use localstorage for this, with timestamp to compare if fetch needed
     // console.log(newYorkTimesData);
     // console.log(newYorkTimesData.results.lists);
-    if (!bestsellerList) {
+    if (!localStorage.getItem("bookData")) {
       console.log("fetching NYT data...");
       const response = await fetch(
         "https://api.nytimes.com/svc/books/v3/lists/overview.json?api-key=jhQErSJStIHawxkBeOcyPHcP0nC3O5Dw",
@@ -166,6 +166,8 @@ function App() {
       setBestsellerList(combinedInnerLists);
 
       console.log("NYTData retrieved and saved to localStorage");
+    } else {
+      console.log("Bestseller data already available in localStorage");
     }
     // console.log("from localstorage", localStorage.getItem("bookData"));
 
@@ -217,7 +219,10 @@ function App() {
       <TopNav />
       <div className="mainContent">
         <SideNav nytCategoryNames={nytCategoryNames} />
-        <Bestsellers nytList={nytList} bestsellerList={bestsellerList} />
+        <Bestsellers
+          nytCategoryNames={nytCategoryNames}
+          bestsellerList={bestsellerList}
+        />
       </div>
     </div>
   );

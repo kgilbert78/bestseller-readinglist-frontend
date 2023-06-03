@@ -1,10 +1,10 @@
 import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
-import { NYTCategoryNames } from "./App";
+import { BestsellerCategory } from "./App";
 import "./App.css";
 
 interface Props {
-  nytCategoryNames: NYTCategoryNames | null;
+  nytCategoryNames: BestsellerCategory[] | null;
 }
 
 export const SideNav = ({ nytCategoryNames }: Props) => {
@@ -16,7 +16,11 @@ export const SideNav = ({ nytCategoryNames }: Props) => {
         position="anchor"
       >
         {nytCategoryNames?.map((category) => {
-          return <MenuItem key={category.key}>{category.name}</MenuItem>;
+          return (
+            <MenuItem key={category.categoryID}>
+              {category.categoryName}
+            </MenuItem>
+          );
         })}
       </Menu>
 
