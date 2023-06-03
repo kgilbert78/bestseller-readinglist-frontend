@@ -1,6 +1,6 @@
 import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
-import { Bestseller, BestsellerCategory } from "./App";
+import { BestsellerCategory } from "./App";
 import "./App.css";
 
 interface Props {

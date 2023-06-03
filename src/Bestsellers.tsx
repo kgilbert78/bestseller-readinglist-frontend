@@ -1,5 +1,5 @@
 // import { useEffect } from "react";
-import { Bestseller, BestsellerCategory } from "./App";
+import { BestsellerCategory } from "./App";
 import "./App.css";
 import "@szhsin/react-menu/dist/index.css";
 
@@ -9,28 +9,6 @@ interface Props {
 
 export const Bestsellers = ({ bestsellerList }: Props) => {
   if (bestsellerList) {
-    let catList = bestsellerList.map((eachCat) => {
-      // console.log("categoryID from nytCategoryNames:", eachCat.categoryID);
-      // for (let eachBookGroup of bestsellerList) {
-      //   for (
-      //     let eachBookIndex = 0;
-      //     eachBookIndex < eachBookGroup.length;
-      //     eachBookIndex++`
-      //   ) {
-      //     if (eachCat.categoryID === eachBookGroup[0].category.categoryID)
-      //       // console.log("eachBook categoryID:", eachBook[0].category.categoryID);
-      //       console.log(
-      //         eachBookGroup[eachBookIndex].category.categoryID,
-      //         eachBookGroup[eachBookIndex].title
-      //       );
-      //   }
-      // }
-    });
-    // let bookList = bestsellerList.map(
-    //   (bookGroup: Bestseller[], index: number) => {
-    //     console.log("bookGroup[index]", bookGroup[index]);
-    //   }
-    // );
     return (
       <div className="d-flex flex-row" id="top">
         <div id="bestsellerLists" className="topMargin">

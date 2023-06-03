@@ -92,17 +92,11 @@ interface User {
 }
 
 function App() {
-  const [nytList, setNYTList] = useState<Array<NYTCategory> | null>(null);
-  // const [nytCategoryNames, setNYTCategoryNames] =
-  //   useState<Array<BestsellerCategory> | null>(null);
   const [bestsellerList, setBestsellerList] =
     useState<Array<BestsellerCategory> | null>(null);
 
   const loadBestsellers = useCallback(async () => {
     console.log("loadBestsellers ran", bestsellerList);
-    // use localstorage for this, with timestamp to compare if fetch needed
-    // console.log(newYorkTimesData);
-    // console.log(newYorkTimesData.results.lists);
     if (!localStorage.getItem("bookData")) {
       console.log("fetching NYT data...");
       const response = await fetch(
@@ -113,7 +107,6 @@ function App() {
         }
       );
       const newYorkTimesData = await response.json();
-      // setNYTList(newYorkTimesData.results.lists);
 
       const trimmedNYTData = newYorkTimesData.results.lists.map(
         (categories: NYTCategory) => {
@@ -132,20 +125,9 @@ function App() {
             };
           });
 
-          // return one list of all books
-          // return booksInCategory.map((book) => book);
-
-          // this returns a list of books for each category
-          // console.log("pre-return:", {
-          //   id: categoryID,
-          //   name: categoryName,
-          //   books: booksInCategory,
-          // });
           return { id: categoryID, name: categoryName, books: booksInCategory };
         }
       );
-      // console.log("trimmedNYTData", trimmedNYTData);
-      // structure:  [ {id, name, books; {} }, repeat for index 0-11 ]
 
       localStorage.setItem("trimmedNYTData", JSON.stringify(trimmedNYTData));
       setBestsellerList(trimmedNYTData);
@@ -154,7 +136,6 @@ function App() {
     } else {
       console.log("Bestseller data already available in localStorage");
     }
-    // console.log("from localstorage", localStorage.getItem("bookData"));
 
     let dataFromStorage = localStorage.getItem("trimmedNYTData");
     if (dataFromStorage) {
@@ -162,7 +143,6 @@ function App() {
       setBestsellerList(nytDataObj);
       console.log("nytDataObj from storage:", nytDataObj);
     }
-    // console.log("bestsellerList in App:", nytList);
   }, []); // bestsellerList
 
   const getReadingListFromDB = async () => {
