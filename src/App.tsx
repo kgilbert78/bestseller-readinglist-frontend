@@ -95,8 +95,9 @@ function App() {
   const [nytList, setNYTList] = useState<Array<NYTCategory> | null>(null);
   const [nytCategoryNames, setNYTCategoryNames] =
     useState<Array<BestsellerCategory> | null>(null);
-  const [bestsellerList, setBestsellerList] =
-    useState<Array<Bestseller> | null>(null);
+  const [bestsellerList, setBestsellerList] = useState<Array<
+    Bestseller[]
+  > | null>(null);
 
   const loadBestsellers = useCallback(async () => {
     console.log("loadBestsellers ran", bestsellerList);
