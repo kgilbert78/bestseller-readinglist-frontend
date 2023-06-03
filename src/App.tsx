@@ -7,19 +7,19 @@ import sampleReadingList from "./sampleReadingList.json";
 
 // NYT stuff I care about
 export interface Bestseller {
+  isbn: number; // specify as 13 digits. use for "key" when rendering
   title: string;
   author: string;
   description: string;
   coverImg: string;
   amazonLink: string;
   rank: number; // rank *within* category
-  // make a "Category" interface to reflect incoming data structure or is this enough?
-  category: BestsellerCategory;
 }
 
 export interface BestsellerCategory {
-  categoryID: number;
-  categoryName: string;
+  id: number;
+  name: string;
+  books: Bestseller[];
 }
 
 // All NYT Stuff
@@ -93,11 +93,10 @@ interface User {
 
 function App() {
   const [nytList, setNYTList] = useState<Array<NYTCategory> | null>(null);
-  const [nytCategoryNames, setNYTCategoryNames] =
+  // const [nytCategoryNames, setNYTCategoryNames] =
+  //   useState<Array<BestsellerCategory> | null>(null);
+  const [bestsellerList, setBestsellerList] =
     useState<Array<BestsellerCategory> | null>(null);
-  const [bestsellerList, setBestsellerList] = useState<Array<
-    Bestseller[]
-  > | null>(null);
 
   const loadBestsellers = useCallback(async () => {
     console.log("loadBestsellers ran", bestsellerList);
@@ -116,55 +115,40 @@ function App() {
       const newYorkTimesData = await response.json();
       // setNYTList(newYorkTimesData.results.lists);
 
-      const filteredCategories = newYorkTimesData.results.lists.map(
-        (categories: NYTCategory) => {
-          return {
-            categoryID: categories.list_id,
-            categoryName: categories.display_name,
-          };
-        }
-      );
-      localStorage.setItem("categoryData", JSON.stringify(filteredCategories));
-      // console.log(
-      //   "categories in storage",
-      //   localStorage.getItem("categoryData")
-      // );
-
-      const filteredBooks = newYorkTimesData.results.lists.map(
+      const trimmedNYTData = newYorkTimesData.results.lists.map(
         (categories: NYTCategory) => {
           let categoryID = categories.list_id;
           let categoryName = categories.display_name;
 
           let booksInCategory = categories.books.map((book) => {
             return {
+              isbn: book.primary_isbn13,
               title: book.title,
               author: book.author,
               description: book.description,
               coverImg: book.book_image,
               amazonLink: book.buy_links[0].url,
               rank: book.rank,
-              category: {
-                categoryID: categoryID,
-                categoryName: categoryName,
-              },
             };
           });
 
           // return one list of all books
-          return booksInCategory.map((book) => book);
+          // return booksInCategory.map((book) => book);
 
           // this returns a list of books for each category
-          // return booksInCategory;
+          // console.log("pre-return:", {
+          //   id: categoryID,
+          //   name: categoryName,
+          //   books: booksInCategory,
+          // });
+          return { id: categoryID, name: categoryName, books: booksInCategory };
         }
       );
+      // console.log("trimmedNYTData", trimmedNYTData);
+      // structure:  [ {id, name, books; {} }, repeat for index 0-11 ]
 
-      // figure out how to handle this in filteredBooks()
-      let combinedInnerLists = filteredBooks.map((list: Bestseller[]) => {
-        return list;
-      });
-
-      localStorage.setItem("bookData", JSON.stringify(combinedInnerLists));
-      setBestsellerList(combinedInnerLists);
+      localStorage.setItem("trimmedNYTData", JSON.stringify(trimmedNYTData));
+      setBestsellerList(trimmedNYTData);
 
       console.log("NYTData retrieved and saved to localStorage");
     } else {
@@ -172,21 +156,11 @@ function App() {
     }
     // console.log("from localstorage", localStorage.getItem("bookData"));
 
-    let categoriesFromStorage = localStorage.getItem("categoryData");
-    console.log("categoriesFromStorage", categoriesFromStorage);
-
-    if (categoriesFromStorage) {
-      let categoryDataObj = JSON.parse(categoriesFromStorage);
-      // console.log("categoryDataObj:", categoryDataObj);
-      setNYTCategoryNames(categoryDataObj);
-      // console.log("nytCategoryNames", nytCategoryNames);
-    }
-
-    let bookDataFromStorage = localStorage.getItem("bookData");
-    if (bookDataFromStorage) {
-      let bookDataObj = JSON.parse(bookDataFromStorage);
-      setBestsellerList(bookDataObj);
-      console.log("bookDataObj from storage:", bookDataObj);
+    let dataFromStorage = localStorage.getItem("trimmedNYTData");
+    if (dataFromStorage) {
+      let nytDataObj = JSON.parse(dataFromStorage);
+      setBestsellerList(nytDataObj);
+      console.log("nytDataObj from storage:", nytDataObj);
     }
     // console.log("bestsellerList in App:", nytList);
   }, []); // bestsellerList
@@ -219,11 +193,8 @@ function App() {
     <div className="App">
       <TopNav />
       <div className="mainContent">
-        <SideNav nytCategoryNames={nytCategoryNames} />
-        <Bestsellers
-          nytCategoryNames={nytCategoryNames}
-          bestsellerList={bestsellerList}
-        />
+        <SideNav bestsellerList={bestsellerList} />
+        <Bestsellers bestsellerList={bestsellerList} />
       </div>
     </div>
   );

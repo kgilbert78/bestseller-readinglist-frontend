@@ -1,13 +1,13 @@
 import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
-import { BestsellerCategory } from "./App";
+import { Bestseller, BestsellerCategory } from "./App";
 import "./App.css";
 
 interface Props {
-  nytCategoryNames: BestsellerCategory[] | null;
+  bestsellerList: BestsellerCategory[] | null;
 }
 
-export const SideNav = ({ nytCategoryNames }: Props) => {
+export const SideNav = ({ bestsellerList }: Props) => {
   return (
     <div className="sidebar" style={{ marginTop: 120 }}>
       <Menu
@@ -15,12 +15,8 @@ export const SideNav = ({ nytCategoryNames }: Props) => {
         overflow="auto"
         position="anchor"
       >
-        {nytCategoryNames?.map((category) => {
-          return (
-            <MenuItem key={category.categoryID}>
-              {category.categoryName}
-            </MenuItem>
-          );
+        {bestsellerList?.map((category: BestsellerCategory) => {
+          return <MenuItem key={category.id}>{category.name}</MenuItem>;
         })}
       </Menu>
 
