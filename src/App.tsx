@@ -98,10 +98,7 @@ function App() {
 
   const loadBestsellers = useCallback(async () => {
     console.log("loadBestsellers ran");
-    console.log(
-      "ts in localstorage",
-      Boolean(localStorage.getItem("nytListTimestamp"))
-    );
+    console.log("ts in localstorage", localStorage.getItem("nytListTimestamp"));
     // use localstorage for this, with timestamp to compare if fetch needed
     let ts = new Date();
     let tsFromStorage = localStorage.getItem("nytListTimestamp");
@@ -126,56 +123,67 @@ function App() {
     let today = now.getDay();
 
     // fetch a new list only if there isn't one in localStorage, or it's been more than 7 days, or a Sunday has passed.
-    // this only reduces it to 2 fetches because nytList isn't set yet, but i need to check for nytList not nytStorage here because nytList could be null therefore couldn't be mapped over.
-    if (!bestsellerList || dayDiff > 7 || (dayDiff < 7 && tsDay > today)) {
-      console.log("fetching NYT data...");
-      const response = await fetch(
-        "https://api.nytimes.com/svc/books/v3/lists/overview.json?api-key=jhQErSJStIHawxkBeOcyPHcP0nC3O5Dw",
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      const newYorkTimesData = await response.json();
+    if (!nytStorage) {
+      if (!bestsellerList || dayDiff > 7 || (dayDiff < 7 && tsDay > today)) {
+        console.log("fetching NYT data...");
+        const response = await fetch(
+          "https://api.nytimes.com/svc/books/v3/lists/overview.json?api-key=jhQErSJStIHawxkBeOcyPHcP0nC3O5Dw",
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        const newYorkTimesData = await response.json();
 
-      const trimmedNYTData = newYorkTimesData.results.lists.map(
-        (categories: NYTCategory) => {
-          let categoryID = categories.list_id;
-          let categoryName = categories.display_name;
+        console.log(
+          "bestseller list date:",
+          newYorkTimesData.results.bestsellers_date
+        ); // this is all it's doing with the fetched data.
 
-          let booksInCategory = categories.books.map((book) => {
+        const trimmedNYTData = newYorkTimesData.results.lists.map(
+          (categories: NYTCategory) => {
+            let categoryID = categories.list_id;
+            let categoryName = categories.display_name;
+
+            let booksInCategory = categories.books.map((book) => {
+              return {
+                isbn: book.primary_isbn13,
+                title: book.title,
+                author: book.author,
+                description: book.description,
+                coverImg: book.book_image,
+                amazonLink: book.buy_links[0].url,
+                rank: book.rank,
+              };
+            });
+
             return {
-              isbn: book.primary_isbn13,
-              title: book.title,
-              author: book.author,
-              description: book.description,
-              coverImg: book.book_image,
-              amazonLink: book.buy_links[0].url,
-              rank: book.rank,
+              id: categoryID,
+              name: categoryName,
+              books: booksInCategory,
             };
-          });
+          }
+        );
 
-          return { id: categoryID, name: categoryName, books: booksInCategory };
-        }
-      );
+        localStorage.setItem("trimmedNYTData", JSON.stringify(trimmedNYTData));
+        setBestsellerList(trimmedNYTData);
+        localStorage.setItem("nytListTimestamp", JSON.stringify(new Date()));
+        setBestsellerList(newYorkTimesData.results.lists);
 
-      localStorage.setItem("trimmedNYTData", JSON.stringify(trimmedNYTData));
-      setBestsellerList(trimmedNYTData);
-      localStorage.setItem("nytListTimestamp", JSON.stringify(new Date()));
-      setBestsellerList(newYorkTimesData.results.lists);
+        console.log("NYTData retrieved and saved to localStorage");
+      } else {
+        console.log("Bestseller data already available in localStorage");
+      }
 
-      console.log("NYTData retrieved and saved to localStorage");
-    } else {
-      console.log("Bestseller data already available in localStorage");
-    }
-
-    let dataFromStorage = localStorage.getItem("trimmedNYTData");
-    if (dataFromStorage) {
-      let nytDataObj = JSON.parse(dataFromStorage);
-      setBestsellerList(nytDataObj);
-      console.log("nytDataObj from storage:", nytDataObj);
+      let dataFromStorage = localStorage.getItem("trimmedNYTData");
+      if (dataFromStorage) {
+        let nytDataObj = JSON.parse(dataFromStorage);
+        setBestsellerList(nytDataObj);
+        console.log("nytDataObj from storage:", nytDataObj);
+      }
     }
   }, []); // bestsellerList
+  // end if (!bestsellerList || dayDiff > 7 || (dayDiff < 7 && tsDay > today))
 
   const getReadingListFromDB = async () => {
     let dbData = sampleReadingList;
