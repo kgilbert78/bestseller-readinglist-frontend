@@ -7,19 +7,19 @@ import sampleReadingList from "./sampleReadingList.json";
 
 // NYT stuff I care about
 export interface Bestseller {
+  isbn: number; // specify as 13 digits. use for "key" when rendering
   title: string;
   author: string;
   description: string;
   coverImg: string;
   amazonLink: string;
   rank: number; // rank *within* category
-  // make a "Category" interface to reflect incoming data structure or is this enough?
-  category: BestsellerCategory;
 }
 
 export interface BestsellerCategory {
-  categoryID: number;
-  categoryName: string;
+  id: number;
+  name: string;
+  books: Bestseller[];
 }
 
 // All NYT Stuff
@@ -68,10 +68,10 @@ export interface NYTCategory {
 }
 
 // better way to tell it what specific strings? not sure if this is doing that.
-export type NYTCategoryNames = Array<{
-  key: NYTCategory["list_id"];
-  name: NYTCategory["display_name"];
-}>;
+// export type NYTCategoryNames = Array<{
+//   key: NYTCategory["list_id"];
+//   name: NYTCategory["display_name"];
+// }>;
 
 // for/from user's reading list in my database
 interface ReadingListBook {
@@ -92,11 +92,7 @@ interface User {
 }
 
 function App() {
-  const [nytList, setNYTList] = useState<Array<NYTCategory> | null>(null);
-  const [nytCategoryNames, setNYTCategoryNames] =
-    useState<NYTCategoryNames | null>(null);
-  const [bestsellerList, setBestsellerList] =
-    useState<Array<Bestseller> | null>(null);
+  const [bestsellerList, setBestsellerList] = useState<Array<BestsellerCategory> | null>(null);
   const [lastNYTFetch, setLastNYTFetch] = useState<Date | null>(null);
 
   const loadBestsellers = useCallback(async () => {
@@ -108,7 +104,7 @@ function App() {
     // use localstorage for this, with timestamp to compare if fetch needed
     let ts = new Date();
     let tsFromStorage = localStorage.getItem("nytListTimestamp");
-    let nytStorage = localStorage.getItem("fullNYTList");
+    let nytStorage = localStorage.getItem("trimmedNYTData"); // was fullNYTList
 
     if (!nytList && nytStorage) {
       setNYTList(JSON.parse(nytStorage));
@@ -140,65 +136,45 @@ function App() {
         }
       );
       const newYorkTimesData = await response.json();
-      localStorage.setItem(
-        "fullNYTList",
-        JSON.stringify(newYorkTimesData.results.lists)
+
+      const trimmedNYTData = newYorkTimesData.results.lists.map(
+        (categories: NYTCategory) => {
+          let categoryID = categories.list_id;
+          let categoryName = categories.display_name;
+
+          let booksInCategory = categories.books.map((book) => {
+            return {
+              isbn: book.primary_isbn13,
+              title: book.title,
+              author: book.author,
+              description: book.description,
+              coverImg: book.book_image,
+              amazonLink: book.buy_links[0].url,
+              rank: book.rank,
+            };
+          });
+
+          return { id: categoryID, name: categoryName, books: booksInCategory };
+        }
       );
+
+      localStorage.setItem("trimmedNYTData", JSON.stringify(trimmedNYTData));
+      setBestsellerList(trimmedNYTData);
       localStorage.setItem("nytListTimestamp", JSON.stringify(new Date()));
       setNYTList(newYorkTimesData.results.lists);
 
-      // for (let eachPart of newYorkTimesData) {
-      //   // make an object that matches the format of the Bestseller interface and append to a list variable, to pass to setBestsellerList after loop finishes
-      // }
+      console.log("NYTData retrieved and saved to localStorage");
     } else {
-      console.log(
-        "no need to fetch NYT data, rendering current list of books..."
-      );
-      const filteredCategories = nytList.map((categories, categoryIndex) => {
-        return {
-          categoryID: categories.list_id,
-          categoryName: categories.display_name,
-        };
-      });
-      localStorage.setItem("categoryData", JSON.stringify(filteredCategories));
-
-      const filteredBooks = nytList.map((categories) => {
-        let categoryID = categories.list_id;
-        let categoryName = categories.display_name;
-
-        let booksInCategory = categories.books.map((book) => {
-          return {
-            title: book.title,
-            author: book.author,
-            description: book.description,
-            coverImg: book.book_image,
-            amazonLink: book.buy_links[0].url,
-            rank: book.rank,
-            category: {
-              categoryID: categoryID,
-              categoryName: categoryName,
-            },
-          };
-        });
-
-        // return one list of all books
-        return booksInCategory.map((book) => book);
-
-        // this returns a list of books for each category
-        // return booksInCategory;
-      });
+      console.log("Bestseller data already available in localStorage");
     }
 
-    let catNameMap = nytList?.map((category: NYTCategory) => {
-      const listID = category.list_id;
-      const categoryName = category.display_name;
-      return { key: listID, name: categoryName };
-    });
-
-    if (catNameMap) {
-      setNYTCategoryNames(catNameMap);
+    let dataFromStorage = localStorage.getItem("trimmedNYTData");
+    if (dataFromStorage) {
+      let nytDataObj = JSON.parse(dataFromStorage);
+      setBestsellerList(nytDataObj);
+      console.log("nytDataObj from storage:", nytDataObj);
     }
-  }, [nytList]); // bestsellerList
+  }, []); // bestsellerList
 
   const getReadingListFromDB = async () => {
     let dbData = sampleReadingList;
@@ -227,8 +203,8 @@ function App() {
     <div className="App">
       <TopNav />
       <div className="mainContent">
-        <SideNav nytCategoryNames={nytCategoryNames} />
-        <Bestsellers nytList={nytList} bestsellerList={bestsellerList} />
+        <SideNav bestsellerList={bestsellerList} />
+        <Bestsellers bestsellerList={bestsellerList} />
       </div>
     </div>
   );

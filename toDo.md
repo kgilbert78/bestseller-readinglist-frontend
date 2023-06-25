@@ -13,6 +13,7 @@
 
 ## Functionality
 
+- add timestamp to localStorage & setup to check api for updates to bestsellerlist every so often
 - hook up links in dropdown of book categories
 - create pages for login and signup and wire links to them to buttons
 - frontend auth with auth-0
@@ -24,8 +25,8 @@
 
 ## Improvements
 
-- reduce calls to NYT API: use local storage for bestseller list between weekly updates?
 - maybe category links should filter bestseller list content instead of jumping down the page?
+- fix useCallBack where it wants me to add bestsellerList (which causes too many api calls)
 
 
 
