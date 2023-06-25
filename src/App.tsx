@@ -92,7 +92,8 @@ interface User {
 }
 
 function App() {
-  const [bestsellerList, setBestsellerList] = useState<Array<BestsellerCategory> | null>(null);
+  const [bestsellerList, setBestsellerList] =
+    useState<Array<BestsellerCategory> | null>(null);
   const [lastNYTFetch, setLastNYTFetch] = useState<Date | null>(null);
 
   const loadBestsellers = useCallback(async () => {
@@ -106,8 +107,8 @@ function App() {
     let tsFromStorage = localStorage.getItem("nytListTimestamp");
     let nytStorage = localStorage.getItem("trimmedNYTData"); // was fullNYTList
 
-    if (!nytList && nytStorage) {
-      setNYTList(JSON.parse(nytStorage));
+    if (!bestsellerList && nytStorage) {
+      setBestsellerList(JSON.parse(nytStorage));
     }
 
     if (tsFromStorage) {
@@ -126,7 +127,7 @@ function App() {
 
     // fetch a new list only if there isn't one in localStorage, or it's been more than 7 days, or a Sunday has passed.
     // this only reduces it to 2 fetches because nytList isn't set yet, but i need to check for nytList not nytStorage here because nytList could be null therefore couldn't be mapped over.
-    if (!nytList || dayDiff > 7 || (dayDiff < 7 && tsDay > today)) {
+    if (!bestsellerList || dayDiff > 7 || (dayDiff < 7 && tsDay > today)) {
       console.log("fetching NYT data...");
       const response = await fetch(
         "https://api.nytimes.com/svc/books/v3/lists/overview.json?api-key=jhQErSJStIHawxkBeOcyPHcP0nC3O5Dw",
@@ -161,7 +162,7 @@ function App() {
       localStorage.setItem("trimmedNYTData", JSON.stringify(trimmedNYTData));
       setBestsellerList(trimmedNYTData);
       localStorage.setItem("nytListTimestamp", JSON.stringify(new Date()));
-      setNYTList(newYorkTimesData.results.lists);
+      setBestsellerList(newYorkTimesData.results.lists);
 
       console.log("NYTData retrieved and saved to localStorage");
     } else {
