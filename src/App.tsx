@@ -92,12 +92,41 @@ interface User {
 }
 
 function App() {
-  const [bestsellerList, setBestsellerList] =
-    useState<Array<BestsellerCategory> | null>(null);
+  const [bestsellerList, setBestsellerList] = useState<Array<BestsellerCategory> | null>(null);
+  const [lastNYTFetch, setLastNYTFetch] = useState<Date | null>(null);
 
   const loadBestsellers = useCallback(async () => {
-    console.log("loadBestsellers ran", bestsellerList);
-    if (!localStorage.getItem("bookData")) {
+    console.log("loadBestsellers ran");
+    console.log(
+      "ts in localstorage",
+      Boolean(localStorage.getItem("nytListTimestamp"))
+    );
+    // use localstorage for this, with timestamp to compare if fetch needed
+    let ts = new Date();
+    let tsFromStorage = localStorage.getItem("nytListTimestamp");
+    let nytStorage = localStorage.getItem("trimmedNYTData"); // was fullNYTList
+
+    if (!nytList && nytStorage) {
+      setNYTList(JSON.parse(nytStorage));
+    }
+
+    if (tsFromStorage) {
+      ts = new Date(JSON.parse(tsFromStorage));
+      setLastNYTFetch(ts);
+    }
+
+    let now = new Date();
+    // fix to subtract lastNYTFetch.getTime() instead... right now lastNYTFetch could be null here
+    let timeDiff = now.getTime() - ts.getTime();
+    // number of milliseconds in a day is 1000*60*60*24
+    let dayDiff = timeDiff / (1000 * 60 * 60 * 24);
+
+    let tsDay = ts.getDay();
+    let today = now.getDay();
+
+    // fetch a new list only if there isn't one in localStorage, or it's been more than 7 days, or a Sunday has passed.
+    // this only reduces it to 2 fetches because nytList isn't set yet, but i need to check for nytList not nytStorage here because nytList could be null therefore couldn't be mapped over.
+    if (!nytList || dayDiff > 7 || (dayDiff < 7 && tsDay > today)) {
       console.log("fetching NYT data...");
       const response = await fetch(
         "https://api.nytimes.com/svc/books/v3/lists/overview.json?api-key=jhQErSJStIHawxkBeOcyPHcP0nC3O5Dw",
@@ -131,6 +160,8 @@ function App() {
 
       localStorage.setItem("trimmedNYTData", JSON.stringify(trimmedNYTData));
       setBestsellerList(trimmedNYTData);
+      localStorage.setItem("nytListTimestamp", JSON.stringify(new Date()));
+      setNYTList(newYorkTimesData.results.lists);
 
       console.log("NYTData retrieved and saved to localStorage");
     } else {
@@ -161,7 +192,6 @@ function App() {
     //   }
     // );
     // const dbData = await response.json();
-    // console.log("dbData", dbData);
   };
 
   useEffect(() => {
