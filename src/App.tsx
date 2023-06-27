@@ -94,7 +94,7 @@ interface User {
 function App() {
   const [bestsellerList, setBestsellerList] =
     useState<Array<BestsellerCategory> | null>(null);
-  const [lastNYTFetch, setLastNYTFetch] = useState<Date | null>(null);
+  const [fetchNewNYTData, setFetchNewNYTData] = useState<Boolean>(false);
 
   const loadBestsellers = useCallback(async () => {
     console.log("loadBestsellers ran");
@@ -108,23 +108,27 @@ function App() {
       setBestsellerList(JSON.parse(nytStorage));
     }
 
+    let now = new Date();
+
     if (tsFromStorage) {
       ts = new Date(JSON.parse(tsFromStorage));
-      setLastNYTFetch(ts);
+
+      let timeDiff = now.getTime() - ts.getTime();
+
+      // number of milliseconds in a day is 1000*60*60*24
+      let dayDiff = timeDiff / (1000 * 60 * 60 * 24);
+
+      let tsDay = ts.getDay();
+      let today = now.getDay();
+
+      if (!bestsellerList || dayDiff > 7 || (dayDiff < 7 && tsDay > today)) {
+        setFetchNewNYTData(true);
+      }
     }
-
-    let now = new Date();
-    // fix to subtract lastNYTFetch.getTime() instead... right now lastNYTFetch could be null here
-    let timeDiff = now.getTime() - ts.getTime();
-    // number of milliseconds in a day is 1000*60*60*24
-    let dayDiff = timeDiff / (1000 * 60 * 60 * 24);
-
-    let tsDay = ts.getDay();
-    let today = now.getDay();
 
     // fetch a new list only if there isn't one in localStorage, or it's been more than 7 days, or a Sunday has passed.
     if (!nytStorage) {
-      if (!bestsellerList || dayDiff > 7 || (dayDiff < 7 && tsDay > today)) {
+      if (fetchNewNYTData) {
         console.log("fetching NYT data...");
         const response = await fetch(
           "https://api.nytimes.com/svc/books/v3/lists/overview.json?api-key=jhQErSJStIHawxkBeOcyPHcP0nC3O5Dw",
@@ -136,9 +140,9 @@ function App() {
         const newYorkTimesData = await response.json();
 
         console.log(
-          "bestseller list date:",
+          "fetched new bestseller list dated:",
           newYorkTimesData.results.bestsellers_date
-        ); // this is all it's doing with the fetched data.
+        );
 
         const trimmedNYTData = newYorkTimesData.results.lists.map(
           (categories: NYTCategory) => {
@@ -182,8 +186,7 @@ function App() {
         console.log("nytDataObj from storage:", nytDataObj);
       }
     }
-  }, []); // bestsellerList
-  // end if (!bestsellerList || dayDiff > 7 || (dayDiff < 7 && tsDay > today))
+  }, [bestsellerList, fetchNewNYTData]);
 
   const getReadingListFromDB = async () => {
     let dbData = sampleReadingList;

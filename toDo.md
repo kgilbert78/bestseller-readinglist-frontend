@@ -4,6 +4,8 @@
 
 - plan mobile version
   - layout of dropdown navigation and reading list portion
+    - Buttons on bottom nav toggle between Bestsellers & Reading List on main screen
+    - Bestseller list shows 1 category at a time and you have to click the current category name to get a dropdown that changes what category is displayed?
   - choose css tool to handle screen size breakpoints
   - 
 - improve appearance of bestseller list side
@@ -13,7 +15,7 @@
 
 ## Functionality
 
-- add timestamp to localStorage & setup to check api for updates to bestsellerlist every so often
+- ~~add timestamp to localStorage & setup to check api for updates to bestsellerlist every so often~~
 - hook up links in dropdown of book categories
 - create pages for login and signup and wire links to them to buttons
 - frontend auth with auth-0
